@@ -59,15 +59,18 @@ def create(response):
     '''
     if response.method == "POST":
         # CreateNewList is a class which inherits django's form.Forms
-        form = CreateNewList(response.POST)
-        if form.is_valid():# check if form is valid
-            form_name = form.cleaned_data["name"]
-            tdlist = ToDoList(name=form_name)
-            tdlist.save()
-            # after we login, the response has a user attribute
-            # whenever we create a new list, it will be added to the current logged in user
-            response.user.todolist.add(tdlist)
-        return HttpResponseRedirect("/%i" % tdlist.id)
+        if str(response.user) != "AnonymousUser":# "If logged in" filter
+            form = CreateNewList(response.POST)
+            if form.is_valid():# check if form is valid
+                form_name = form.cleaned_data["name"]
+                tdlist = ToDoList(name=form_name)
+                tdlist.save()
+                # after we login, the response has a user attribute
+                # whenever we create a new list, it will be added to the current logged in user
+                response.user.todolist.add(tdlist)
+            return HttpResponseRedirect("/%i" % tdlist.id)
+        else:
+            return HttpResponseRedirect("/login")
     else:
         form = CreateNewList()
     return render(response, "main/create.html", {"form": form})
