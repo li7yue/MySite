@@ -14,8 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from register import views as v
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # this is the top level of all links, here link to main.urls
+    path('', include('main.urls')),
+    path('admin/', admin.site.urls),# id: admin, password: Admin1234567
+    path('register/', v.register, name="register"),# direct to register page and func
+    # this include django buildin application for login & out
+    path('', include("django.contrib.auth.urls")),
 ]
